@@ -18,6 +18,9 @@ def update_time():
         update_hour_bar(g.hour + g.minute/60)
         # Reschedule the function to run again after 100ms
         root.after(100, update_time)
+        # Update the hour bar
+        update_hour_bar(g.hour + g.minute/60)
+
 
 def exit_program():
     global root
@@ -54,6 +57,21 @@ def draw_grid(event=None):
     for i in range(0, height, 50):  # adjust the step size as per your requirement
         grid_canvas.create_line([(0, i), (width, i)], fill='#d3d3d3', dash=(2, 5))
 
+def show_home():
+    home_frame.pack(fill='both', expand=True)
+    stats_frame.pack_forget()
+    customize_frame.pack_forget()
+
+def show_stats():
+    stats_frame.pack(fill='both', expand=True)
+    home_frame.pack_forget()
+    customize_frame.pack_forget()
+
+def show_customize():
+    customize_frame.pack(fill='both', expand=True)
+    home_frame.pack_forget()
+    stats_frame.pack_forget()
+
 # Create the main window
 root = tk.Tk()
 root.title("TimeRiver")
@@ -72,26 +90,66 @@ root.bind('<Configure>', configure_window)
 # Variable to indicate whether to stop the timer
 stop = False
 
+########################################### BUttons #########################################
+
+# Create a frame for the buttons
+button_frame = tk.Frame(root, bg='#FFCCCC')
+button_frame.pack(fill='x')
+
+# Create Home, Stats, and Customize buttons
+button = tk.Button(button_frame, text="Home", command=show_home)
+stats_button = tk.Button(button_frame, text="Stats", command=show_stats)
+customize_button = tk.Button(button_frame, text="©", command=show_customize)
+
+# Instead of packing the buttons to the side, we'll use grid to place them in the center of the frame.
+button.grid(row=0, column=1, sticky='ew')
+stats_button.grid(row=0, column=2, sticky='ew')
+customize_button.grid(row=0, column=3, sticky='ew')
+
+# Configure the columns to have equal weight
+button_frame.grid_columnconfigure(1, weight=1)
+button_frame.grid_columnconfigure(2, weight=1)
+button_frame.grid_columnconfigure(3, weight=1)
+
+
 ##############################################################################################
 #                                           Home Page                                        #
 ##############################################################################################
-# Create a canvas for the grid
-grid_canvas = tk.Canvas(root, bg='#FFDCDC')  # Same background color as the root window
+
+# Create a frame for the home page
+# Create a frame for the home page
+home_frame = tk.Frame(root, bg='#FFCCCC')
+grid_canvas = tk.Canvas(home_frame, bg='#FFDCDC')  # Same background color as the root window
 grid_canvas.place(x=0, y=0, relwidth=1, relheight=1)
-
-
-# Create a label to display the time, with a light red background
-label = tk.Label(root, font=("Arial", 30), anchor='center', bg='#FFCCCC')
+label = tk.Label(home_frame, font=("Arial", 30), anchor='center', bg='#FFCCCC')
 label.place(relx=0.5, rely=0.5, anchor='center')
 
-button = tk.Button(root, text="Exit", command=exit_program, bg='#FFCCCC')
+button = tk.Button(home_frame, text="Exit", command=exit_program, bg='#FFCCCC')
 button.place(relx=0.5, rely=0.6, anchor='center')
 
-# Create an hour bar on the right side of the window
-hour_bar = tk.Canvas(root, width=30, height=500, bg='white')
+hour_bar = tk.Canvas(home_frame, width=30, height=500, bg='white')
 hour_bar.place(relx=0.95, rely=0.5, anchor='center')
 for i in range(24):
     hour_bar.create_rectangle(0, i*500/24, 30, (i+1)*500/24 - 1, fill='green', outline='black')
+
+
+##############################################################################################
+#                                           Stat Page                                        #
+##############################################################################################
+
+# Create a frame for the stats page
+stats_frame = tk.Frame(root, bg='#FFCCCC')
+stats_label = tk.Label(stats_frame, text="Stats page", font=("Arial", 30), bg='#FFCCCC')
+stats_label.pack()
+
+##############################################################################################
+#                                           Customize Page                                   #
+##############################################################################################
+
+# Create a frame for the customize page
+customize_frame = tk.Frame(root, bg='#FFCCCC')
+customize_label = tk.Label(customize_frame, text="Customize page", font=("Arial", 30), bg='#FFCCCC')
+customize_label.pack()
 
 # Start the countdown
 update_time()
@@ -99,10 +157,8 @@ update_time()
 # Draw the grid
 draw_grid()
 
-##############################################################################################
-#                                           Home Page end                                    #
-##############################################################################################
-
+# Show the home page by default
+show_home()
 
 # Start the main event loop
 root.mainloop()
